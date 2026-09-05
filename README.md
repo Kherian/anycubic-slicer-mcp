@@ -1,3 +1,103 @@
+O que é isto? / What is this?
+
+## 🇧🇷 Português
+
+### O problema que isso resolve
+
+Quem imprime em 3D sabe: quando uma peça sai errada — suporte grudado demais, primeira camada mal aderida, peça frágil, *stringing*, acabamento ruim — o culpado quase sempre está escondido em algum parâmetro do slicer que a maioria das pessoas nunca abriu, nem sabe que existe. E mesmo quando você sabe *qual* configuração mexer, raramente sabe *para qual valor* mudar sem tentativa e erro.
+
+Este projeto conecta o Claude diretamente aos arquivos de configuração do seu Anycubic Slicer Next (ou OrcaSlicer). Na prática, isso transforma o Claude em um assistente técnico de impressão 3D que **realmente enxerga sua configuração de verdade** — não um chute genérico baseado em "geralmente funciona assim", mas o seu perfil, com seus valores, sua impressora, seu material.
+
+### Como isso ajuda no dia a dia
+
+**Se você não sabe onde mexer:** em vez de vasculhar dezenas de abas do programa procurando "aquela configuração de suporte", você só descreve o problema em português comum. O Claude traduz isso para a chave técnica certa, olha o valor atual no seu perfil, e explica o que está acontecendo.
+
+**Se você é iniciante em impressão 3D:** não precisa saber o que é "Z-distance" ou "sparse infill pattern" de antemão. Você descreve o sintoma ("a peça quebrou fácil", "ficou uma coisa fiapenta saindo entre as partes", "o suporte não sai"), e o Claude relaciona isso com os parâmetros prováveis, explica o porquê, e sugere o ajuste.
+
+**Fluxo típico:**
+1. Você tira uma foto da impressão com problema (ou simplesmente descreve).
+2. Você conta o que aconteceu: "o suporte ficou impossível de tirar", "a peça está mole", "quero mais resistência mas sem gastar muito mais material".
+3. O Claude consulta seu perfil real (não um genérico) e identifica os parâmetros relacionados.
+4. Ele propõe uma mudança concreta, mostrando o antes/depois — nada é alterado sem você ver e aprovar.
+5. Se você aprovar, a mudança é aplicada com backup automático — dá pra desfazer a qualquer momento.
+
+**Também serve para o caminho inverso:** se você já manja de impressão 3D e só quer economia de tempo, pode pedir comparações entre dois perfis, exportar/importar pacotes de configuração, ou ajustar parâmetros específicos diretamente, sem precisar navegar pela interface do programa.
+
+### O que isso NÃO faz (pelo menos ainda)
+
+Não fatia arquivos de verdade nem estima tempo/consumo de material com precisão de engenharia (isso é fatiamento real, uma etapa futura possível — veja abaixo). Não substitui bom senso: se o problema for mecânico (nivelamento da mesa, calibração do bico), o Claude aponta isso em vez de tentar "consertar" via configuração de software o que é um problema de hardware.
+
+---
+
+## 🇬🇧 English
+
+### The problem this solves
+
+Anyone who prints in 3D knows the drill: when a print comes out wrong — support stuck too hard, poor first-layer adhesion, a part that's too fragile, stringing, rough finish — the culprit is almost always hiding in some slicer parameter most people have never opened, or don't even know exists. And even when you know *which* setting to touch, you rarely know *what value* to change it to without trial and error.
+
+This project connects Claude directly to your Anycubic Slicer Next (or OrcaSlicer) configuration files. In practice, that turns Claude into a 3D-printing technical assistant that **actually sees your real configuration** — not a generic guess based on "this usually works," but your profile, your values, your printer, your material.
+
+### How this helps day to day
+
+**If you don't know where to look:** instead of digging through dozens of tabs hunting for "that one support setting," you just describe the problem in plain language. Claude translates that into the right technical key, checks the current value in your actual profile, and explains what's going on.
+
+**If you're new to 3D printing:** you don't need to know what "Z-distance" or "sparse infill pattern" means beforehand. You describe the symptom ("the part broke too easily," "there's stringy stuff between the parts," "the support won't come off"), and Claude connects that to the likely parameters, explains why, and suggests the fix.
+
+**Typical flow:**
+1. You take a photo of the problem print (or just describe it).
+2. You explain what happened: "the support was impossible to remove," "the part feels weak," "I want more strength without using much more material."
+3. Claude checks your actual profile (not a generic one) and identifies the related parameters.
+4. It proposes a concrete change, showing before/after — nothing changes without you seeing and approving it.
+5. If you approve, the change is applied with an automatic backup — you can undo it at any time.
+
+**It also works the other way:** if you already know 3D printing well and just want to save time, you can ask for comparisons between two profiles, export/import configuration bundles, or tweak specific parameters directly, without navigating the program's UI at all.
+
+### What this does NOT do (yet)
+
+It doesn't actually slice files or estimate time/material with engineering precision (that's real slicing, a possible future step — see below). It doesn't replace good judgment either: if the problem is mechanical (bed leveling, nozzle calibration), Claude will point that out instead of trying to "fix" a hardware problem through software settings.
+
+---
+
+# Perguntas frequentes / FAQ
+
+## 🇧🇷 (1) Isso funciona com OrcaSlicer também?
+
+**Sim, tecnicamente já funciona** — e a razão é simples: o Anycubic Slicer Next é um **fork direto** do OrcaSlicer, usando exatamente o mesmo formato de arquivos de preset (JSON, mesma lógica de herança `inherits`, mesmo formato de bundle `.orca_printer`). O motor por trás deste MCP não tem nada específico da Anycubic no código — ele só lê pastas de presets no formato OrcaSlicer, onde quer que estejam.
+
+Preparamos um terceiro arquivo — **`orcaslicer-presets-lite.mcpb`** — que é a mesma versão Lite, só com os textos e caminhos padrão da tela de instalação ajustados para o OrcaSlicer em vez do Anycubic Slicer Next.
+
+**Aviso honesto:** os caminhos padrão dessa variante (`/Applications/OrcaSlicer.app/Contents/Resources/profiles/...` no macOS) foram baseados na convenção conhecida de apps macOS construídos sobre o mesmo framework (wxWidgets) — não testamos contra uma instalação real do OrcaSlicer. Como o OrcaSlicer suporta várias marcas de impressora (Bambu Lab, Prusa, Creality, Voron, genéricas...), você provavelmente vai precisar escolher manualmente a subpasta da marca certa na tela de instalação. Se você usa OrcaSlicer, instale e nos conte se os caminhos batem — ajustamos rapidinho se não baterem.
+
+## 🇧🇷 (2) Dá pra mandar o arquivo 3D (STL/3MF) e pedir configurações pra um objetivo específico (ex.: "isso é um chaveiro, quero mais resistência, será impresso em PLA")?
+
+Duas respostas, uma pra agora e outra pra um possível próximo passo:
+
+**O que já funciona hoje, numa conversa comum com o Claude (sem precisar do MCP pra isso especificamente):** você pode enviar o arquivo STL ou 3MF direto no chat. O Claude consegue abrir esse arquivo com ferramentas de análise geométrica (bibliotecas como `trimesh`), calcular coisas como dimensões, volume, paredes finas, ângulos de saliência (overhangs) que podem precisar de suporte, e cruzar isso com o que você descreveu ("quero mais resistência", "vai ser um chaveiro que vai no bolso, precisa aguentar torção"). A partir disso, o Claude já consegue sugerir ajustes qualitativos de preset — mais paredes, padrão de preenchimento diferente, mais camadas superiores/inferiores, orientação de impressão — mesmo sem "fatiar" o arquivo de verdade.
+
+**O que exigiria um passo a mais de desenvolvimento — fatiamento real:** pra te dar números de verdade (quantos gramas de filamento, quanto tempo de impressão, se aquela parede fina realmente vai imprimir bem com aquele bico), seria preciso *fatiar* o arquivo de verdade, não só analisar a geometria. Descobrimos que o Anycubic Slicer Next (por herdar do OrcaSlicer) provavelmente tem um **modo de linha de comando pra fatiamento sem abrir a interface gráfica** (`--slice`, `--load-settings`, `--export-3mf`) — isso é real e documentado para o OrcaSlicer, mas não confirmamos ainda no executável específico da Anycubic. Se isso funcionar, dá pra construir novas tools tipo `slice_project`, `get_estimated_print_time`, `get_filament_usage` — permitindo comparar de verdade duas ou três configurações candidatas ("essa gasta 20g e leva 45min, essa outra gasta 24g mas é mais resistente") antes de você decidir.
+
+Isso não está construído ainda — é o próximo passo natural do projeto, se fizer sentido pra você.
+
+---
+
+## 🇬🇧 (1) Does this work with OrcaSlicer too?
+
+**Yes, it technically already does** — the reason is simple: Anycubic Slicer Next is a **direct fork** of OrcaSlicer, using the exact same preset file format (JSON, same `inherits` inheritance logic, same `.orca_printer` bundle format). The engine behind this MCP has nothing Anycubic-specific in its code — it just reads preset folders in OrcaSlicer's format, wherever they live.
+
+We've prepared a third file — **`orcaslicer-presets-lite.mcpb`** — which is the same Lite version, just with the install screen's text and default paths adjusted for OrcaSlicer instead of Anycubic Slicer Next.
+
+**Honest caveat:** this variant's default paths (`/Applications/OrcaSlicer.app/Contents/Resources/profiles/...` on macOS) are based on the known convention for macOS apps built on the same framework (wxWidgets) — we haven't tested this against a real OrcaSlicer install. Since OrcaSlicer supports many printer brands (Bambu Lab, Prusa, Creality, Voron, generic...), you'll likely need to manually pick the right brand subfolder on the install screen. If you use OrcaSlicer, install it and let us know if the paths match — we'll adjust quickly if they don't.
+
+## 🇬🇧 (2) Can I send a 3D file (STL/3MF) and ask for settings tailored to a specific goal (e.g. "this is a keychain, I want more strength, it'll be printed in PLA")?
+
+Two answers — one for right now, one for a possible next step:
+
+**What already works today, in a normal conversation with Claude (no MCP needed for this specifically):** you can upload the STL or 3MF file directly in chat. Claude can open that file with geometry-analysis tools (libraries like `trimesh`), compute things like dimensions, volume, thin walls, overhang angles that might need support, and cross-reference that with what you described ("I want more strength," "it's a keychain that goes in a pocket, needs to survive twisting"). From that, Claude can already suggest qualitative preset adjustments — more walls, a different infill pattern, more top/bottom layers, print orientation — even without actually *slicing* the file.
+
+**What would need one more development step — real slicing:** to give you real numbers (grams of filament, print time, whether that thin wall will actually print well with that nozzle), the file would need to be actually *sliced*, not just geometrically analyzed. We found that Anycubic Slicer Next (by inheriting from OrcaSlicer) likely has a **headless command-line slicing mode** (`--slice`, `--load-settings`, `--export-3mf`) — this is real and documented for OrcaSlicer itself, though we haven't confirmed it yet on the specific Anycubic executable. If that works, new tools could be built — `slice_project`, `get_estimated_print_time`, `get_filament_usage` — letting you really compare two or three candidate configurations ("this one uses 20g and takes 45min, this other one uses 24g but is stronger") before deciding.
+
+This isn't built yet — it's the natural next step for the project, if it makes sense for you.
+
 # Anycubic Slicer Next MCP
 
 Two distribution packages are provided:
